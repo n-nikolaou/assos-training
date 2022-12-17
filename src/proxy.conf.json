@@ -1,0 +1,9 @@
+{
+  "/proxy/*": {
+    "target": "http://medresearch1.med.auth.gr/exercise",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": {"^/proxy" : ""}
+  }
+}

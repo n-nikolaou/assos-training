@@ -3,16 +3,22 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { GameComponent } from './game/game.component';
+import {HttpClientModule} from "@angular/common/http";
+import {GameService} from "./game/game.service";
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    GameComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [GameService],
+  bootstrap: [AppComponent,
+  GameComponent]
 })
 export class AppModule { }
