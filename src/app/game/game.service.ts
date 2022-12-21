@@ -5,12 +5,13 @@ import {HttpClient} from "@angular/common/http";
   providedIn: 'root'
 })
 export class GameService {
-  private baseUrl = "proxy/data-structure.json";
+  private baseUrl = "http://medresearch1.med.auth.gr/exercise/data-structure.json";
 
   constructor(private http: HttpClient) { }
 
   getGames() {
     console.log("!")
+
     return this.http.get(this.baseUrl);
   }
 }
