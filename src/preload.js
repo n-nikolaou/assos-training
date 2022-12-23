@@ -1,25 +1,29 @@
-const { contextBridge, net } = require('electron')
+const { contextBridge } = require('electron')
 
 contextBridge.exposeInMainWorld('versions', {
   node: () => process.versions.node,
   chrome: () => process.versions.chrome,
   electron: () => process.versions.electron,
-  // we can also expose variables, not just functions
 })
 
 const mongodb = require('mongodb');
 const uri = 'mongodb://localhost:27017';
+let isInit;
 
-function fillArray(str) {
+async function fillDB(str, collection) {
   const data = JSON.parse(str);
-  if (data) {
-    let games = []
-    for (let i = 0; i < data?.cognitiveGames[0].contents.length; i++) {
-      games.push(data?.cognitiveGames[0].contents[i].information)
+  if (data && !isInit) {
+    const client = new mongodb.MongoClient(uri);
+    try {
+      const database = client.db("insertDB");
+      const haiku = database.collection("haiku");
+      for (let i = 0; i < data?.cognitiveGames[0].contents.length; i++) {
+        await haiku.insertOne(data?.cognitiveGames[0].contents[i].information)
+      }
+    } finally {
+      client.close();
     }
-    return games;
-  } else
-    return null
+  }
 }
 
 function getGames() {
@@ -42,8 +46,7 @@ function getGames() {
     //the whole response has been received, so we just print it out here
     response.on('end', function () {
       console.log('The request has ended');
-      games = fillArray(str);
-      console.table(games)
+      fillDB(str);
       if (!games) console.error('No input given')
     });
   }
@@ -53,12 +56,12 @@ function getGames() {
   return games;
 }
 
-const client = new mongodb.MongoClient(uri);
 async function run() {
+  const client = new mongodb.MongoClient(uri);
   try {
     const database = client.db("insertDB");
     const haiku = database.collection("haiku");
-    const isInit = await haiku.findOne({
+    isInit = await haiku.findOne({
       title: "initialized"
     })
     if (!isInit) await haiku.insertOne({
