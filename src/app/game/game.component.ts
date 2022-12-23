@@ -32,7 +32,6 @@ export class GameComponent implements AfterViewInit {
             this.games.push(this.data?.cognitiveGames[0].contents[i].information)
           }
         }
-        console.table(this.games);
       },
       (error) => console.log(error)
     )

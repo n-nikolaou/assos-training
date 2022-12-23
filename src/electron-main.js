@@ -2,17 +2,21 @@ const { app, BrowserWindow } = require('electron')
 const path = require('path')
 
 const MongoClient = require('mongodb').MongoClient
+const isDev = process.env.NODE_ENV !== 'production'
 
 function createWindow () {
   const win = new BrowserWindow({
-    width: 1500,
+    width: isDev ? 1800 : 1000,
     height: 900,
     webPreferences: {
+      devTools: isDev,
+      nodeIntegration: true,
       preload: path.join(__dirname, 'preload.js')
     }
   })
 
   win.loadFile('./dist/assos-training/index.html')
+  if (isDev) win.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {
