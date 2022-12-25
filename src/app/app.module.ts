@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { GameComponent } from './game/game.component';
 import {HttpClientModule} from "@angular/common/http";
 import {GameService} from "./game/game.service";
+import {GamesLoaderModule} from "../GamesLoader.module";
 
 @NgModule({
   declarations: [

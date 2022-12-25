@@ -10,8 +10,6 @@ export class GameService {
   constructor(private http: HttpClient) { }
 
   getGames() {
-    console.log("!")
-
     return this.http.get(this.baseUrl);
   }
 }

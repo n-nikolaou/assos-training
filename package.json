@@ -1,6 +1,6 @@
 {
   "name": "assos-training",
-  "main": "src/electron-main.js",
+  "main": "src/electron-main.cjs",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
