@@ -5,7 +5,7 @@ import {HttpClient} from "@angular/common/http";
   providedIn: 'root'
 })
 export class GameService {
-  private baseUrl = "http://medresearch1.med.auth.gr/exercise/data-structure.json";
+  private baseUrl = "http://localhost:8000/games";
 
   constructor(private http: HttpClient) { }
 

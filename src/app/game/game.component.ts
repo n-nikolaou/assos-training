@@ -1,7 +1,6 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component} from '@angular/core';
 import {Games} from "../models/Games";
 import {GameService} from "./game.service";
-import {Content} from "../models/Content";
 import {Information} from "../models/Information";
 
 @Component({
@@ -27,6 +26,7 @@ export class GameComponent implements AfterViewInit {
       (next) => {
           // @ts-ignore
         this.data = next;
+        console.table(this.data);
         if (this.data) {
           for (let i = 0; i < this.data?.cognitiveGames[0].contents.length; i++) {
             this.games.push(this.data?.cognitiveGames[0].contents[i].information)

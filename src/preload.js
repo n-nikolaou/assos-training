@@ -1,6 +1,7 @@
 const contextBridge = require('electron').contextBridge;
 const mongodb = require('mongodb');
 const http = require('http');
+const express = require('express');
 
 contextBridge.exposeInMainWorld('versions', {
   node: () => process.versions.node,
@@ -11,14 +12,16 @@ contextBridge.exposeInMainWorld('versions', {
 const uri = 'mongodb://localhost:27017';
 const databaseName = 'assosDB';
 const collectionName = 'games';
+const serverPort = 8000;
 let isInit;
 
 async function fillDB(str, collection) {
   const data = JSON.parse(str);
   if (data && !isInit) {
     try {
+      await collection.insertOne(data);
       for (let i = 0; i < data?.cognitiveGames[0].contents.length; i++) {
-        await collection.insertOne(data?.cognitiveGames[0].contents[i].information)
+        await collection.insertOne(data?.cognitiveGames[0].contents[i])
       }
     } catch (e) {
       console.error(e);
@@ -52,10 +55,47 @@ async function getGamesFromEndpoint(collection) {
 
 async function getGamesFromDB(collection) {
   try {
-    return await collection.find({"title": {$exists: true}}).toArray();
+    const raw = await collection.findOne({"version": {$exists: true}});
+    const games = await collection.find({"id": {$exists: true}}).toArray();
+    return [games, raw];
   } catch (e) {
     console.error(e);
   }
+}
+
+async function uploadOnServer(games, raw) {
+  const app = express();
+  app.listen(serverPort, function () {
+    console.log('Listening on ' + serverPort + '.')
+  })
+
+  app.route('/').get((req, res) => {
+    res.send("Recognized endpoints on this server include '/games', '/games/ids' and '/games/ID'.")
+  })
+  app.route('/games').get((req, res) => {
+    res.status(200).type('json').send(JSON.stringify(raw, null, 2) + '\n');
+  })
+  app.route('/games/ids').get((req, res) => {
+    let avIDS = [];
+    for (let i = 0; i < games.length; i++) {
+      avIDS.push(games[i].id);
+    }
+    res.status(200).type('json').send('{\n' + '"ids:"\n' + JSON.stringify(avIDS, null, 2) + '\n}');
+  })
+  app.route('/games/:ID').get((req, res) => {
+    const ID = req.params['ID'];
+    let i;
+    for (i = 0; i < games.length; i++) {
+      if (games[i].id === +ID) {
+        res.status(200).type('json').send(JSON.stringify(games[i], null, 2) + '\n');
+        break;
+      }
+    }
+    if (i === games.length) {
+      res.status(404);
+      res.send("There's no game with given id");
+    }
+  })
 }
 
 async function run() {
@@ -72,8 +112,10 @@ async function run() {
       })
       await getGamesFromEndpoint(collection);
     }
-    const games = await getGamesFromDB(collection);
-    console.table(games);
+    const result = await getGamesFromDB(collection)
+    const games = result[0];
+    const raw = result[1];
+    await uploadOnServer(games, raw);
   } catch (e) {
     console.error(e);
   }
