@@ -1,13 +1,3 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Cognitive Games</title>
-</head>
-<body>  
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">Cognitive Games</a>
@@ -17,28 +7,17 @@
     <div class="collapse navbar-collapse" id="navbarColor03">
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
-          <a class="nav-link active" href="#">Home
-            <span class="visually-hidden">(current)</span>
+          <a class="nav-link active" [routerLink]="['']" routerLinkActive="active">Home
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Features</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Pricing</a>
+          <a class="nav-link">Games</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#">About</a>
         </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
-          <div class="dropdown-menu">
-            <a class="dropdown-item" href="#">Action</a>
-            <a class="dropdown-item" href="#">Another action</a>
-            <a class="dropdown-item" href="#">Something else here</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">Separated link</a>
-          </div>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Your Reviews</a>
         </li>
       </ul>
       <form class="d-flex">
@@ -50,22 +29,21 @@
 </nav>
 <div class="m-5">
   <h1>Welcome to Cognitive Games!</h1>
-  <h3 class="my-2 text-muted">Here are some games you can try.</h3>
+  <h3 class="my-2 text-muted">Here are some featured games you can try.</h3>
 </div>
-<div class="alert alert-light my-2 mx-5">
+<div #target class="alert alert-light my-2 mx-5">
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-7 g-4">
-    <div class="col"  *ngFor="let g of games">
+    <div class="col"  *ngFor="let g of featuredGames">
       <div class="card">
-        <img src="http://medresearch1.med.auth.gr/exercise/{{g.mainScreen[0].images[0]}}" class="card-img-top" alt="{{g.title}}">
+        <a [routerLink]="['/game',g.id]" routerLinkActive="active">
+          <img src="http://medresearch1.med.auth.gr/exercise/{{g.information.mainScreen[0].images[0]}}" class="card-img-top" alt="{{g.information.title}}">
+        </a>
         <div class="card-body">
-          <h5 class="card-title">{{g.title}}</h5>
+          <h5 class="card-title">{{g.information.title}}</h5>
           <h6 class="card-text text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A, nam!</h6>
-          <a href="{{g.multimedia}}" class="btn btn-primary mt-2 text-white" target="_blank" rel="noopener noreferrer" >Watch Online</a>
+          <a href="{{g.information.multimedia}}" class="btn btn-primary mt-2 text-white" target="_blank" rel="noopener noreferrer" >Watch Online</a>
         </div>
       </div>
     </div>
   </div>
 </div>
-
-</body>
-</html>

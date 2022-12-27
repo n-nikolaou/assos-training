@@ -2,6 +2,7 @@ import {AfterViewInit, Component} from '@angular/core';
 import {Games} from "../models/Games";
 import {GameService} from "./game.service";
 import {Information} from "../models/Information";
+import {Content} from "../models/Content";
 
 @Component({
   selector: 'app-root',
@@ -10,13 +11,16 @@ import {Information} from "../models/Information";
 })
 export class GameComponent implements AfterViewInit {
   data: Games | undefined;
-  games: Information[];
+  games: Content[];
+  featuredGames: Content[];
 
   constructor(private gameService: GameService) {
     this.games = [];
+    this.featuredGames = [];
   }
 
   ngAfterViewInit(): void {
+    console.log('1');
     this.getGames();
   }
 
@@ -26,14 +30,19 @@ export class GameComponent implements AfterViewInit {
       (next) => {
           // @ts-ignore
         this.data = next;
-        console.table(this.data);
         if (this.data) {
           for (let i = 0; i < this.data?.cognitiveGames[0].contents.length; i++) {
-            this.games.push(this.data?.cognitiveGames[0].contents[i].information)
+            this.games.push(this.data?.cognitiveGames[0].contents[i])
+            if (i < 10) this.featuredGames.push(this.data?.cognitiveGames[0].contents[i]);
           }
         }
       },
       (error) => console.log(error)
     )
+  }
+
+  scrollToElement($element: HTMLDivElement): void {
+    console.log($element);
+    $element.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
   }
 }
