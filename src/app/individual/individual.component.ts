@@ -4,6 +4,7 @@ import {GameService} from "../game/game.service";
 import {Information} from "../models/Information";
 import {Games} from "../models/Games";
 import {Content} from "../models/Content";
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-individual',
@@ -15,14 +16,27 @@ export class IndividualComponent implements AfterViewInit{
   id: number;
   data: Games | undefined;
   index: number;
+  currentDifficulty: number;
+  showToast: Boolean;
+  reviews: Number[];
+  safeURL: SafeResourceUrl | undefined;
+  apiLoaded: boolean;
 
   constructor(
     private ActivatedRoute: ActivatedRoute,
-    private gameService: GameService
+    private gameService: GameService,
+    private domSanitizer: DomSanitizer
   ) {
     this.games = [];
     this.id = 0;
     this.index = 0;
+    this.currentDifficulty = 0;
+    this.showToast = false;
+    this.apiLoaded = false;
+    this.reviews = [];
+    for (let i = 0; i < 3; i++) {
+      this.reviews.push(0);
+    }
 
     const obs = this.gameService.getGames();
     obs.subscribe(
@@ -53,5 +67,22 @@ export class IndividualComponent implements AfterViewInit{
         }
       }
     });
+
+    if (!this.apiLoaded) {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      document.body.appendChild(tag);
+      this.apiLoaded = true;
+    }
+  }
+
+  setDifficulty(n: number) {
+    this.currentDifficulty = n;
+    console.log(this.currentDifficulty);
+  }
+
+  setReview(d: number, s: number) {
+    this.showToast = true;
+    this.reviews[d] = s;
   }
 }

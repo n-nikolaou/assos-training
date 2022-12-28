@@ -27,4 +27,65 @@
     </div>
   </div>
 </nav>
-<p>individual works! {{games[index].id}}</p>
+
+
+<div class="m-5">
+  <h1 class="my-1">{{games[index].information.title}}</h1>
+  <h3 class="my-1 text-muted">Select Difficulty</h3>
+  <div class="btn-group my-2" role="group" aria-label="Basic radio toggle button group">
+    <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked (change)="setDifficulty(0)">
+    <label class="btn btn-outline-primary" for="btnradio1">0</label>
+    <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" (change)="setDifficulty(1)">
+    <label class="btn btn-outline-primary" for="btnradio2">1</label>
+    <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off" (change)="setDifficulty(2)">
+    <label class="btn btn-outline-primary" for="btnradio3">2</label>
+  </div>
+
+  <div class="card border-secondary mb-3">
+    <div class="card-img-top">   
+      <ngb-carousel>
+        <ng-template ngbSlide *ngFor="let i of games[index].information.mainScreen[currentDifficulty].images">
+          <div class="picsum-img-wrapper">
+            <img src="http://medresearch1.med.auth.gr/exercise/{{i}}" alt="Random first slide" class="w-100"/>
+          </div>
+          <div class="carousel-caption">
+            <h6>Nulla vitae elit libero, a pharetra augue mollis interdum.</h6>
+          </div>
+        </ng-template>
+      </ngb-carousel>
+    </div>    
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">Maximum duration: {{games[index].information.mainScreen[currentDifficulty].maxDurationSec}}</li>
+      <li class="list-group-item">
+        <youtube-player videoId="{{this.games[index].information.multimedia.slice(32,43)}}"> </youtube-player>
+      </li>
+    </ul>    
+    <div class="card-body">
+      <div class="rate">
+        <input type="radio" id="star5" name="rate" value="5" (change)="setReview(currentDifficulty, 5)"/>
+        <label for="star5" title="text">5 stars</label>
+        <input type="radio" id="star4" name="rate" value="4" (change)="setReview(currentDifficulty, 4)"/>
+        <label for="star4" title="text">4 stars</label>
+        <input type="radio" id="star3" name="rate" value="3" (change)="setReview(currentDifficulty, 3)"/>
+        <label for="star3" title="text">3 stars</label>
+        <input type="radio" id="star2" name="rate" value="2" (change)="setReview(currentDifficulty, 2)"/>
+        <label for="star2" title="text">2 stars</label>
+        <input type="radio" id="star1" name="rate" value="1" (change)="setReview(currentDifficulty, 1)"/>
+        <label for="star1" title="text">1 star</label>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast show position-fixed bottom-0 end-0" role="alert" aria-live="assertive" aria-atomic="true" *ngIf="showToast == true">
+  <div class="toast-header">
+    <strong class="me-auto">Review updated.</strong>
+    <small>just now</small>
+    <button type="button" class="btn-close ms-2 mb-1" data-bs-dismiss="toast" aria-label="Close" (click)="showToast = false">
+      <span aria-hidden="true"></span>
+    </button>
+  </div>
+  <div class="toast-body">
+    {{reviews[currentDifficulty]}} stars on "{{games[index].information.title}}"!
+  </div>
+</div>
+<script src="https://www.youtube.com/iframe_api"></script>

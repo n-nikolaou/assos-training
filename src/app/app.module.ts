@@ -7,6 +7,8 @@ import { GameComponent } from './game/game.component';
 import {HttpClientModule} from "@angular/common/http";
 import {GameService} from "./game/game.service";
 import { IndividualComponent } from './individual/individual.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { YouTubePlayerModule } from '@angular/youtube-player';
 
 @NgModule({
   declarations: [
@@ -17,7 +19,9 @@ import { IndividualComponent } from './individual/individual.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    NgbModule,
+    YouTubePlayerModule
   ],
   providers: [GameService],
   bootstrap: [AppComponent]
