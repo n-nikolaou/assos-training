@@ -42,7 +42,7 @@
   </div>
 
   <div class="card border-secondary mb-3">
-    <div class="card-img-top">   
+    <div class="card-img-top">
       <ngb-carousel>
         <ng-template ngbSlide *ngFor="let i of games[index].information.mainScreen[currentDifficulty].images">
           <div class="picsum-img-wrapper">
@@ -53,13 +53,13 @@
           </div>
         </ng-template>
       </ngb-carousel>
-    </div>    
+    </div>
     <ul class="list-group list-group-flush">
       <li class="list-group-item">Maximum duration: {{games[index].information.mainScreen[currentDifficulty].maxDurationSec}}</li>
       <li class="list-group-item">
         <youtube-player videoId="{{this.games[index].information.multimedia.slice(32,43)}}"> </youtube-player>
       </li>
-    </ul>    
+    </ul>
     <div class="card-body">
       <div class="rate">
         <input type="radio" id="star5" name="rate" value="5" (change)="setReview(currentDifficulty, 5)"/>

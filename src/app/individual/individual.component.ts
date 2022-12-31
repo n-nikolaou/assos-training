@@ -1,10 +1,9 @@
 import {AfterViewInit, Component} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {GameService} from "../game/game.service";
-import {Information} from "../models/Information";
 import {Games} from "../models/Games";
 import {Content} from "../models/Content";
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import {Review} from "../models/Reviews";
 
 @Component({
   selector: 'app-individual',
@@ -13,19 +12,18 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 })
 export class IndividualComponent implements AfterViewInit{
   games: Content[];
+  reviewsData: Review[];
   id: number;
   data: Games | undefined;
   index: number;
   currentDifficulty: number;
   showToast: Boolean;
-  reviews: Number[];
-  safeURL: SafeResourceUrl | undefined;
+  reviews: number[];
   apiLoaded: boolean;
 
   constructor(
     private ActivatedRoute: ActivatedRoute,
     private gameService: GameService,
-    private domSanitizer: DomSanitizer
   ) {
     this.games = [];
     this.id = 0;
@@ -33,12 +31,13 @@ export class IndividualComponent implements AfterViewInit{
     this.currentDifficulty = 0;
     this.showToast = false;
     this.apiLoaded = false;
+    this.reviewsData = [];
     this.reviews = [];
     for (let i = 0; i < 3; i++) {
       this.reviews.push(0);
     }
 
-    const obs = this.gameService.getGames();
+    let obs = this.gameService.getGames();
     obs.subscribe(
       (next) => {
         // @ts-ignore
@@ -50,6 +49,15 @@ export class IndividualComponent implements AfterViewInit{
         }
       },
       (error) => console.log(error)
+    )
+
+    obs = this.gameService.getReviews();
+    obs.subscribe(
+      (next) => {
+        // @ts-ignore
+        this.reviewsData = next;
+      },
+      (error) => console.error(error)
     )
   }
 
@@ -84,5 +92,7 @@ export class IndividualComponent implements AfterViewInit{
   setReview(d: number, s: number) {
     this.showToast = true;
     this.reviews[d] = s;
+
+    this.gameService.uploadReviews(this.reviews, this.id);
   }
 }

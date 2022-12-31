@@ -1,13 +1,15 @@
-const contextBridge = require('electron').contextBridge;
+const {contextBridge, ipcRenderer, ipcMain} = require('electron');
 const mongodb = require('mongodb');
 const http = require('http');
 const express = require('express');
 
-contextBridge.exposeInMainWorld('versions', {
-  node: () => process.versions.node,
-  chrome: () => process.versions.chrome,
-  electron: () => process.versions.electron,
-})
+// contextBridge.exposeInMainWorld('versions', {
+//   node: () => process.versions.node,
+//   chrome: () => process.versions.chrome,
+//   electron: () => process.versions.electron,
+// })
+
+window.ipcRenderer = require('electron').ipcRenderer;
 
 const uri = 'mongodb://localhost:27017';
 const databaseName = 'assosDB';
@@ -63,7 +65,7 @@ async function getGamesFromDB(collection) {
   }
 }
 
-async function uploadOnServer(games, raw) {
+async function uploadOnServer(games, raw, reviews) {
   const app = express();
   app.listen(serverPort, function () {
     console.log('Listening on ' + serverPort + '.')
@@ -96,6 +98,12 @@ async function uploadOnServer(games, raw) {
       res.send("There's no game with given id");
     }
   })
+  app.route('/reviews').get((req, res) => {
+    if (reviews)
+      res.status(200).type('json').send(JSON.stringify(reviews, null, 2) + '\n');
+    else
+      res.status(200).type('json').send('{' + '\n' + '"reviews": []' + '\n}');
+  })
 }
 
 async function run() {
@@ -112,10 +120,15 @@ async function run() {
       })
       await getGamesFromEndpoint(collection);
     }
+    const reviews = await collection.findOne({"reviews": {$exists: true}});
     const result = await getGamesFromDB(collection)
     const games = result[0];
     const raw = result[1];
-    await uploadOnServer(games, raw);
+    await uploadOnServer(games, raw, reviews);
+
+    ipcMain.on('reviewsUpdate', (event, data) => {
+      console.log(data);
+    })
   } catch (e) {
     console.error(e);
   }
