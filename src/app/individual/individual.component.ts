@@ -11,71 +11,46 @@ import {Review} from "../models/Reviews";
   styleUrls: ['./individual.component.css']
 })
 export class IndividualComponent implements AfterViewInit{
-  games: Content[];
-  reviewsData: Review[];
-  id: number;
-  data: Games | undefined;
+  game: Content;
+  reviews: Review;
+
   index: number;
+  id: number;
   currentDifficulty: number;
+
   showToast: Boolean;
-  reviews: number[];
   apiLoaded: boolean;
 
   constructor(
     private ActivatedRoute: ActivatedRoute,
     private gameService: GameService,
   ) {
-    this.games = [];
     this.id = 0;
     this.index = 0;
     this.currentDifficulty = 0;
     this.showToast = false;
     this.apiLoaded = false;
-    this.reviewsData = [];
-    this.reviews = [];
-    for (let i = 0; i < 3; i++) {
-      this.reviews.push(0);
-    }
+    this.reviews = {gameID: -1, stars: [0, 0, 0]};
+    this.game = {id: -1, information: {title: '', multimedia: '', multimediaType: '', mainScreen: []}};
 
-    let obs = this.gameService.getGames();
-    obs.subscribe(
-      (next) => {
-        // @ts-ignore
-        this.data = next;
-        if (this.data) {
-          for (let i = 0; i < this.data?.cognitiveGames[0].contents.length; i++) {
-            this.games.push(this.data?.cognitiveGames[0].contents[i])
-          }
-        }
-      },
-      (error) => console.log(error)
-    )
-
-    obs = this.gameService.getReviews();
-    obs.subscribe(
-      (next) => {
-        // @ts-ignore
-        this.reviewsData = next;
-      },
-      (error) => console.error(error)
-    )
-  }
-
-  ngAfterViewInit() {
-    const obs = this.ActivatedRoute.paramMap.subscribe((params) => {
+    this.ActivatedRoute.paramMap.subscribe((params) => {
       if (params.get('id') !== null) {
         // @ts-ignore
         this.id = +params.get('id');
+        this.reviews.gameID = this.id;
       }
-      console.log(this.id);
-      for (let i = 0; i < this.games.length; i++) {
-        if (this.games[i].id === this.id) {
-          this.index = i;
-          break;
-        }
-      }
+
+      this.gameService.getGames(this.id).subscribe(
+        // @ts-ignore
+        (next) => this.game = next,
+        (error) => console.error(error)
+      );
     });
 
+    this.reviews = this.gameService.getReview(this.id);
+  }
+
+  ngAfterViewInit() {
     if (!this.apiLoaded) {
       const tag = document.createElement('script');
       tag.src = 'https://www.youtube.com/iframe_api';
@@ -86,13 +61,15 @@ export class IndividualComponent implements AfterViewInit{
 
   setDifficulty(n: number) {
     this.currentDifficulty = n;
-    console.log(this.currentDifficulty);
+    this.showToast = false;
   }
 
   setReview(d: number, s: number) {
     this.showToast = true;
-    this.reviews[d] = s;
+    this.reviews.stars[d] = s;
 
-    this.gameService.uploadReviews(this.reviews, this.id);
+    this.gameService.updateReviews(this.reviews, this.id);
+
+    setTimeout(() => this.showToast = false, 2000);
   }
 }

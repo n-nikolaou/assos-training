@@ -20,13 +20,11 @@ export class GameComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    console.log('1');
     this.getGames();
   }
 
   getGames(): void {
-    const obs = this.gameService.getGames();
-    obs.subscribe(
+    this.gameService.getGames(-1).subscribe(
       (next) => {
           // @ts-ignore
         this.data = next;

@@ -1,6 +1,5 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
-const express = require("express");
 const mongodb = require("mongodb");
 
 const uri = 'mongodb://localhost:27017';
@@ -9,17 +8,13 @@ const collectionName = 'reviews';
 let reviewsData;
 
 const isDev = process.env.NODE_ENV !== 'production'
-const server = express();
-server.listen(8001, function () {
-  console.log('Listening in 8001');
-})
 
 function createWindow () {
   const win = new BrowserWindow({
     width: isDev ? 1800 : 1000,
     height: 900,
     webPreferences: {
-      devTools: isDev,
+      devTools: true,
       nodeIntegration: true,
       enableRemoteModule: true,
       contextIsolation: false,
@@ -38,8 +33,7 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow()
     }
-
-    })
+  });
 })
 
 app.on('window-all-closed', async () => {
@@ -47,8 +41,14 @@ app.on('window-all-closed', async () => {
   try {
     const database = client.db(databaseName);
     const collection = database.collection(collectionName);
+    await collection.deleteMany({});
     for (let i = 0; i < reviewsData.length; i++)
       await collection.insertOne(reviewsData[i]);
+
+    await database.collection('games').drop(function(err, delOK) {
+      if (err) throw err;
+      if (delOK) console.log("Collection deleted");
+    });
   } catch (e) {
     console.error(e);
   }

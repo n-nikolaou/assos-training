@@ -12,27 +12,51 @@ export class GameService {
 
   constructor(private http: HttpClient) {
     this.reviews = [];
+    this.http.get(`${this.baseUrl}/reviews`).subscribe(
+      (next) => {
+        // @ts-ignore
+        this.reviews = next
+        this.uploadReviews();
+      },
+      (error) => this.reviews = []
+    );
    }
 
-  getGames() {
-    return this.http.get(`${this.baseUrl}/games`);
+  getGames(id: number) {
+    if (id !== -1)
+      return this.http.get(`${this.baseUrl}/games/${id}`);
+    else
+      return this.http.get(`${this.baseUrl}/games`);
+  }
+
+  getReview(id: number) {
+    for (let i = 0; i < this.reviews.length; i++)
+      if (this.reviews[i].gameID === id) return this.reviews[i];
+
+    return {gameID: id, stars: [0, 0, 0]};
   }
 
   getReviews() {
-   return this.http.get(`${this.baseUrl}/reviews`);
+    return this.reviews;
   }
 
-  uploadReviews(reviewsGame: number[], id: number) {
+  updateReviews(reviewsGame: Review, id: number) {
     let i;
-    for (i = 0; i < this.reviews.length; i++)
-      if (this.reviews[i].gameID === id) {
-        this.reviews[i].stars = reviewsGame;
-        break;
-      }
+    if (this.reviews) {
+      for (i = 0; i < this.reviews.length; i++)
+        if (this.reviews[i].gameID === id) {
+          this.reviews[i] = reviewsGame;
+          break;
+        }
 
-    if (i === this.reviews.length)
-      this.reviews.push({gameID: id, stars: reviewsGame});
+      if (i === this.reviews.length)
+        this.reviews.push(reviewsGame);
+    }
 
+    this.uploadReviews();
+  }
+
+  uploadReviews() {
     const ipc = window.require('electron').ipcRenderer;
     ipc.send('reviewsUpdate', this.reviews);
   }

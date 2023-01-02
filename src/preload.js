@@ -13,13 +13,27 @@ window.ipcRenderer = require('electron').ipcRenderer;
 
 const uri = 'mongodb://localhost:27017';
 const databaseName = 'assosDB';
-const collectionName = 'games';
 const serverPort = 8000;
-let isInit;
+let initialized = false;
+let timeInit = new Date();
 
-async function fillDB(str, collection) {
+/**
+ * Fills database with data (games) that gets from the parameters
+ * and individual games
+ * @param str the data from endpoint
+ * @param database the database to be filled
+ * @returns {Promise<void>}
+ */
+async function fillDB(str, database) {
+  await database.collection('games').drop(function(err, delOK) {
+    if (err) throw err;
+    if (delOK) console.log("Collection deleted");
+  });
+
+  const collection = database.collection('games');
+
   const data = JSON.parse(str);
-  if (data && !isInit) {
+  if (data) {
     try {
       await collection.insertOne(data);
       for (let i = 0; i < data?.cognitiveGames[0].contents.length; i++) {
@@ -31,7 +45,13 @@ async function fillDB(str, collection) {
   }
 }
 
-async function getGamesFromEndpoint(collection) {
+/**
+ * Gets data (games) from given endpoint and calls function
+ * to fill a database with retrieved data
+ * @param database the database to be filled
+ * @returns {Promise<void>}
+ */
+async function getGamesFromEndpoint(database) {
   let str = '';
 
   const options = {
@@ -47,44 +67,87 @@ async function getGamesFromEndpoint(collection) {
 
     //the whole response has been received, so we just print it out here
     response.on('end', async function () {
-      console.log('The request has ended');
-      await fillDB(str, collection);
+      await fillDB(str, database);
     });
   }
 
   let request = await http.get(options, callback)
 }
 
-async function getGamesFromDB(collection) {
+/**
+ * Finds data (games) in given database and returns them.
+ * If a certain time has passed (60 minutes) since the initialization of the app
+ * the function retrieves the data again from given endpoint
+ * @param database the database to be searched
+ * @returns {Promise<*[]>} the games
+ */
+async function getGamesFromDB(database) {
+  let raw, games;
+  const collection = database.collection('games');
+
+  if (initialized) {
+    const timeNow = new Date();
+    if ((timeNow.getMinutes() + timeNow.getHours() * 60) - (timeInit.getMinutes() + timeNow.getHours() * 60) > 60) {
+      timeInit = timeNow;
+      console.log('upserted');
+      await getGamesFromEndpoint(database);
+    }
+  } else {
+    console.log('initialized');
+    initialized = true;
+    await getGamesFromEndpoint(database);
+  }
   try {
-    const raw = await collection.findOne({"version": {$exists: true}});
-    const games = await collection.find({"id": {$exists: true}}).toArray();
+    while ((await collection.findOne({"id": 30})) === null)
+      setTimeout(() => console.log('Loading'), 2000);
+
+    raw = await collection.findOne({"version": {$exists: true}});
+    games = await collection.find({"id": {$exists: true}}).toArray();
     return [games, raw];
   } catch (e) {
     console.error(e);
   }
 }
 
-async function uploadOnServer(games, raw, reviews) {
+/**
+ * Finds data (reviews) from given collection of a specific database and returns them
+ * @param collection the collection to be searched
+ * @returns {Promise<*>} the reviews
+ */
+async function getReviewsFromDB(collection) {
+  try {
+    return await collection.find({"stars": {$exists: true}}).toArray();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+/**
+ * Uploads on a middleware (server on localhost) games and reviews retrieved by database, so they
+ * can be accessed from the components in Angular app.
+ * @param database the database that contains the data
+ * @param reviews the reviews to be uploaded
+ * @returns {Promise<void>}
+ */
+async function uploadOnServer(database, reviews) {
   const app = express();
   app.listen(serverPort, function () {
     console.log('Listening on ' + serverPort + '.')
   })
 
+  let games;
+
   app.route('/').get((req, res) => {
-    res.send("Recognized endpoints on this server include '/games', '/games/ids' and '/games/ID'.")
+    res.send("Recognized endpoints on this server include '/games', '/games/ID', '/reviews' and '/reviews/ID'.")
   })
-  app.route('/games').get((req, res) => {
-    res.status(200).type('json').send(JSON.stringify(raw, null, 2) + '\n');
+  app.route('/games').get(async (req, res) => {
+    let result = await getGamesFromDB(database);
+    res.status(200).type('json').send(JSON.stringify(result[1], null, 2) + '\n');
   })
-  app.route('/games/ids').get((req, res) => {
-    let avIDS = [];
-    for (let i = 0; i < games.length; i++) {
-      avIDS.push(games[i].id);
-    }
-    res.status(200).type('json').send('{\n' + '"ids:"\n' + JSON.stringify(avIDS, null, 2) + '\n}');
-  })
-  app.route('/games/:ID').get((req, res) => {
+  app.route('/games/:ID').get(async (req, res) => {
+    let result = await getGamesFromDB(database);
+    games = result[0];
+
     const ID = req.params['ID'];
     let i;
     for (i = 0; i < games.length; i++) {
@@ -104,31 +167,34 @@ async function uploadOnServer(games, raw, reviews) {
     else
       res.status(200).type('json').send('{' + '\n' + '"reviews": []' + '\n}');
   })
+  app.route('/reviews/:ID').get((req, res) => {
+    const ID = req.params['ID'];
+    let i;
+    for (i = 0; i < reviews.length; i++) {
+      if (reviews[i].gameID === +ID) {
+        res.status(200).type('json').send(JSON.stringify(reviews[i], null, 2) + '\n');
+        break;
+      }
+    }
+    if (i === reviews.length) {
+      res.status(404);
+      res.send("There's no reviews for a game with given id");
+    }
+  })
 }
 
+/**
+ * Initializes the app with data
+ * @returns {Promise<void>}
+ */
 async function run() {
   const client = new mongodb.MongoClient(uri);
   try {
     const database = client.db(databaseName);
-    const collection = database.collection(collectionName);
-    isInit = await collection.findOne({
-      isInit: true
-    })
-    if (!isInit) {
-      await collection.insertOne({
-        isInit: true
-      })
-      await getGamesFromEndpoint(collection);
-    }
-    const reviews = await collection.findOne({"reviews": {$exists: true}});
-    const result = await getGamesFromDB(collection)
-    const games = result[0];
-    const raw = result[1];
-    await uploadOnServer(games, raw, reviews);
+    const collection = database.collection('reviews');
+    const reviews = await getReviewsFromDB(collection);
 
-    ipcMain.on('reviewsUpdate', (event, data) => {
-      console.log(data);
-    })
+    await uploadOnServer(database, reviews);
   } catch (e) {
     console.error(e);
   }

@@ -30,7 +30,7 @@
 
 
 <div class="m-5">
-  <h1 class="my-1">{{games[index].information.title}}</h1>
+  <h1 class="my-1">{{game.information.title}}</h1>
   <h3 class="my-1 text-muted">Select Difficulty</h3>
   <div class="btn-group my-2" role="group" aria-label="Basic radio toggle button group">
     <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked (change)="setDifficulty(0)">
@@ -40,11 +40,15 @@
     <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off" (change)="setDifficulty(2)">
     <label class="btn btn-outline-primary" for="btnradio3">2</label>
   </div>
+  <h5 class="my-1" *ngIf="reviews.stars[currentDifficulty] !== 0">
+    <span class="text-info">You reviewed this difficulty of this game with </span>
+    <span style="color: goldenrod">{{reviews.stars[currentDifficulty]}} stars.</span>
+  </h5>
 
   <div class="card border-secondary mb-3">
     <div class="card-img-top">
       <ngb-carousel>
-        <ng-template ngbSlide *ngFor="let i of games[index].information.mainScreen[currentDifficulty].images">
+        <ng-template ngbSlide *ngFor="let i of game.information.mainScreen[currentDifficulty].images">
           <div class="picsum-img-wrapper">
             <img src="http://medresearch1.med.auth.gr/exercise/{{i}}" alt="Random first slide" class="w-100"/>
           </div>
@@ -55,9 +59,9 @@
       </ngb-carousel>
     </div>
     <ul class="list-group list-group-flush">
-      <li class="list-group-item">Maximum duration: {{games[index].information.mainScreen[currentDifficulty].maxDurationSec}}</li>
+      <li class="list-group-item">Maximum duration: {{game.information.mainScreen[currentDifficulty].maxDurationSec}} seconds</li>
       <li class="list-group-item">
-        <youtube-player videoId="{{this.games[index].information.multimedia.slice(32,43)}}"> </youtube-player>
+        <youtube-player videoId="{{this.game.information.multimedia.slice(32,43)}}"> </youtube-player>
       </li>
     </ul>
     <div class="card-body">
@@ -76,7 +80,7 @@
     </div>
   </div>
 </div>
-<div class="toast show position-fixed bottom-0 end-0" role="alert" aria-live="assertive" aria-atomic="true" *ngIf="showToast == true">
+<div class="toast show position-fixed bottom-0 end-0" role="alert" aria-live="assertive" aria-atomic="true" *ngIf="showToast === true">
   <div class="toast-header">
     <strong class="me-auto">Review updated.</strong>
     <small>just now</small>
@@ -85,7 +89,7 @@
     </button>
   </div>
   <div class="toast-body">
-    {{reviews[currentDifficulty]}} stars on "{{games[index].information.title}}"!
+    {{reviews.stars[currentDifficulty]}} stars on "{{game.information.title}}"!
   </div>
 </div>
 <script src="https://www.youtube.com/iframe_api"></script>
