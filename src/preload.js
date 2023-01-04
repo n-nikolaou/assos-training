@@ -27,7 +27,6 @@ let timeInit = new Date();
 async function fillDB(str, database) {
   await database.collection('games').drop(function(err, delOK) {
     if (err) throw err;
-    if (delOK) console.log("Collection deleted");
   });
 
   const collection = database.collection('games');
@@ -89,11 +88,9 @@ async function getGamesFromDB(database) {
     const timeNow = new Date();
     if ((timeNow.getMinutes() + timeNow.getHours() * 60) - (timeInit.getMinutes() + timeNow.getHours() * 60) > 60) {
       timeInit = timeNow;
-      console.log('upserted');
       await getGamesFromEndpoint(database);
     }
   } else {
-    console.log('initialized');
     initialized = true;
     await getGamesFromEndpoint(database);
   }

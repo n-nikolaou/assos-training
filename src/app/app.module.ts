@@ -11,6 +11,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { YouTubePlayerModule } from '@angular/youtube-player';
 import { NavigationComponent } from './navigation/navigation.component';
 import { CollectionComponent } from './collection/collection.component';
+import { ReviewsComponent } from './reviews/reviews.component';
+import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,9 @@ import { CollectionComponent } from './collection/collection.component';
     GameComponent,
     IndividualComponent,
     NavigationComponent,
-    CollectionComponent
+    CollectionComponent,
+    ReviewsComponent,
+    FooterComponent
   ],
   imports: [
     BrowserModule,

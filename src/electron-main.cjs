@@ -47,7 +47,6 @@ app.on('window-all-closed', async () => {
 
     await database.collection('games').drop(function(err, delOK) {
       if (err) throw err;
-      if (delOK) console.log("Collection deleted");
     });
   } catch (e) {
     console.error(e);
