@@ -9,12 +9,16 @@ import {GameService} from "./game/game.service";
 import { IndividualComponent } from './individual/individual.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { YouTubePlayerModule } from '@angular/youtube-player';
+import { NavigationComponent } from './navigation/navigation.component';
+import { CollectionComponent } from './collection/collection.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     GameComponent,
-    IndividualComponent
+    IndividualComponent,
+    NavigationComponent,
+    CollectionComponent
   ],
   imports: [
     BrowserModule,

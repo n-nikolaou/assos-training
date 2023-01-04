@@ -27,8 +27,8 @@ export class IndividualComponent implements AfterViewInit{
   ) {
     this.id = 0;
     this.index = 0;
-    this.currentDifficulty = 0;
     this.showToast = false;
+    this.currentDifficulty = 0;
     this.apiLoaded = false;
     this.reviews = {gameID: -1, stars: [0, 0, 0]};
     this.game = {id: -1, information: {title: '', multimedia: '', multimediaType: '', mainScreen: []}};
@@ -41,8 +41,11 @@ export class IndividualComponent implements AfterViewInit{
       }
 
       this.gameService.getGames(this.id).subscribe(
-        // @ts-ignore
-        (next) => this.game = next,
+        (next) => {
+          // @ts-ignore
+          this.game = next
+          this.currentDifficulty = this.game.information.mainScreen[this.game.information.mainScreen.length - 1].difficulty;
+        },
         (error) => console.error(error)
       );
     });

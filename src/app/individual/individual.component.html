@@ -1,44 +1,10 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Cognitive Games</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarColor03">
-      <ul class="navbar-nav me-auto">
-        <li class="nav-item">
-          <a class="nav-link" [routerLink]="['']" routerLinkActive="active">Home
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link">Games</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">About</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Your Reviews</a>
-        </li>
-      </ul>
-      <form class="d-flex">
-        <input class="form-control me-sm-2" type="search" placeholder="Search">
-        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-      </form>
-    </div>
-  </div>
-</nav>
-
-
 <div class="m-5">
   <h1 class="my-1">{{game.information.title}}</h1>
   <h3 class="my-1 text-muted">Select Difficulty</h3>
-  <div class="btn-group my-2" role="group" aria-label="Basic radio toggle button group">
-    <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked (change)="setDifficulty(0)">
-    <label class="btn btn-outline-primary" for="btnradio1">0</label>
-    <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" (change)="setDifficulty(1)">
-    <label class="btn btn-outline-primary" for="btnradio2">1</label>
-    <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off" (change)="setDifficulty(2)">
-    <label class="btn btn-outline-primary" for="btnradio3">2</label>
+  <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+    <label *ngFor="let d of game.information.mainScreen" class="btn btn-outline-primary">
+      <input type="radio" name="btnradio" checked (change)="setDifficulty(d.difficulty)"> {{d.difficulty}}
+    </label>
   </div>
   <h5 class="my-1" *ngIf="reviews.stars[currentDifficulty] !== 0">
     <span class="text-info">You reviewed this difficulty of this game with </span>

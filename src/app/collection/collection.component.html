@@ -1,0 +1,64 @@
+<script>
+  let gameTitle = document.getElementById("gameTitleInput").value
+</script>
+<table class="table table-striped table-hover">
+  <thead>
+  <tr>
+    <th scope="col">Game title</th>
+    <th scope="col">Video</th>
+    <th scope="col">Available difficulties</th>
+    <th scope="col">Duration</th>
+    <th scope="col">
+      <a [routerLink]="['games']" (click)="showFilter = true">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20px" height="20px">
+          <path d="M3.9 54.9C10.5 40.9 24.5 32 40 32H472c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9V448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6V320.9L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z"/>
+        </svg>
+      </a>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let g of games">
+      <th scope="row">
+        <a style="text-decoration: none; color: #202020" [routerLink]="['/game',g.id]" routerLinkActive="active">{{g.information.title}}</a>
+      </th>
+      <td>
+        <a href="{{g.information.multimedia}}}" target="_blank" rel="noopener noreferrer">Watch video here</a>
+      </td>
+      <td>
+        <span *ngFor="let d of g.information.mainScreen">{{d.difficulty}} </span>
+      </td>
+      <td>
+        <span *ngFor="let d of g.information.mainScreen">{{d.maxDurationSec}} </span>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<div class="toast show position-fixed top-50 start-50 translate-middle" role="alert" aria-live="assertive" aria-atomic="true" *ngIf="showFilter === true">
+  <div class="toast-header">
+    <strong class="me-auto">Filter games</strong>
+    <button type="button" class="btn-close ms-2 mb-1" data-bs-dismiss="toast" aria-label="Close" (click)="showFilter = false">
+      <span aria-hidden="true"></span>
+    </button>
+  </div>
+  <div class="toast-body">
+    <form>
+      <fieldset>
+        <fieldset class="form-group">
+          <legend>Enter game title</legend>
+          <input type="text" class="form-control" placeholder="Game title" id="gameTitleInput">
+        </fieldset>
+        <fieldset class="form-group">
+          <legend class="mt-4">Select difficulties</legend>
+          <div class="form-check" *ngFor="let item of [].constructor(maxDiff + 1); let i = index">
+            <input class="form-check-input" type="checkbox" value="{{i}}" id="flexCheck{{i}}">
+            <label class="form-check-label" for="flexCheck{{i}}">
+              {{i}}
+            </label>
+          </div>
+        </fieldset>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="toast" aria-label="Close" (click)="setFilters()">Submit</button>
+      </fieldset>
+    </form>
+  </div>
+</div>
