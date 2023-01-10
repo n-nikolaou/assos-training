@@ -1,17 +1,17 @@
-<div class="m-5">
+<div class="m-5" style="text-align: center">
   <h1 class="my-1">{{game.information.title}}</h1>
   <h3 class="my-1 text-muted">Select Difficulty</h3>
-  <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+  <div class="btn-group my-2" role="group" aria-label="Basic radio toggle button group">
     <label *ngFor="let d of game.information.mainScreen" class="btn btn-outline-primary">
       <input type="radio" name="btnradio" checked (change)="setDifficulty(d.difficulty)"> {{d.difficulty}}
     </label>
   </div>
-  <h5 class="my-1" *ngIf="reviews.stars[currentDifficulty] !== 0">
+  <h5 class="mb-1" *ngIf="reviews.stars[currentDifficulty] !== 0">
     <span class="text-info">You reviewed this difficulty of this game with </span>
     <span style="color: goldenrod">{{reviews.stars[currentDifficulty]}} stars.</span>
   </h5>
 
-  <div class="card border-secondary mb-3">
+  <div class="card border-secondary mb-3 mx-auto" style="alignment: center; max-width: 80%">
     <div class="card-img-top">
       <ngb-carousel>
         <ng-template ngbSlide *ngFor="let i of game.information.mainScreen[currentDifficulty].images">
@@ -25,12 +25,14 @@
       </ngb-carousel>
     </div>
     <ul class="list-group list-group-flush">
-      <li class="list-group-item">Maximum duration: {{game.information.mainScreen[currentDifficulty].maxDurationSec}} seconds</li>
       <li class="list-group-item">
-        <youtube-player videoId="{{this.game.information.multimedia.slice(32,43)}}"> </youtube-player>
+        <h5 class="align-middle">Maximum duration: {{game.information.mainScreen[currentDifficulty].maxDurationSec}} seconds</h5>
+      </li>
+      <li class="list-group-item">
+        <youtube-player videoId="{{this.game.information.multimedia.slice(32,43)}}" style="width: max-content"> </youtube-player>
       </li>
     </ul>
-    <div class="card-body">
+    <div class="card-body align-content-center">
       <div class="rate">
         <input type="radio" id="star5" name="rate" value="5" (change)="setReview(currentDifficulty, 5)"/>
         <label for="star5" title="text">5 stars</label>

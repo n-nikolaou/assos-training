@@ -2,9 +2,9 @@
   <thead>
   <tr>
     <th scope="col">Game title</th>
-    <th scope="col">Video</th>
-    <th scope="col">Available difficulties</th>
-    <th scope="col">Duration</th>
+    <th scope="col" style="text-align: center">Video</th>
+    <th scope="col" style="text-align: center">Available difficulties</th>
+    <th scope="col" style="text-align: center">Duration</th>
     <th scope="col">
       <a [routerLink]="['games']" (click)="showFilter = true">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20px" height="20px">
@@ -19,13 +19,13 @@
       <th scope="row">
         <a style="text-decoration: none; color: #202020" [routerLink]="['/game',g.id]" routerLinkActive="active">{{g.information.title}}</a>
       </th>
-      <td>
+      <td style="text-align: center">
         <a href="{{g.information.multimedia}}}" target="_blank" rel="noopener noreferrer">Watch video here</a>
       </td>
-      <td>
+      <td style="text-align: center">
         <span *ngFor="let d of g.information.mainScreen">{{d.difficulty}} </span>
       </td>
-      <td>
+      <td style="text-align: center">
         <span *ngFor="let d of g.information.mainScreen">{{d.maxDurationSec}} </span>
       </td>
     </tr>

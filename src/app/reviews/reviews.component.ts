@@ -11,6 +11,12 @@ import { Review } from '../models/Reviews';
 })
 export class ReviewsComponent implements AfterViewInit {
   reviews: Review[];
+  table: {
+    gameID: number,
+    title: string,
+    difficulty: number,
+    stars: number
+  }[];
   games: Content[];
   data: Games | undefined;
   indexes: number[];
@@ -19,21 +25,28 @@ export class ReviewsComponent implements AfterViewInit {
     this.games = [];
     this.reviews = this.gameService.getReviews();
     this.indexes = [];
-    console.table(this.reviews);
+    this.table = [];
   }
 
-  ngAfterViewInit(): void {   
-    console.log("aaaaaaaaaa"); 
+  ngAfterViewInit(): void {
     this.gameService.getGames(-1).subscribe(
       (next) => {
         //@ts-ignore
         this.data = next;
-        console.log("!!!");
         if (this.data) {
           for (let i = 0; i < this.data?.cognitiveGames[0].contents.length; i++) {
             this.games.push(this.data?.cognitiveGames[0].contents[i])
-            console.table(this.games[i].id);
             this.indexes[this.games[i].id] = i;
+          }
+        }
+        for (let i = 0; i < this.reviews.length; i++) {
+          for (let j = 0; j < this.reviews[i].stars.length; j++) {
+            if (this.reviews[i].stars[j] != 0) this.table.push({
+              gameID: this.reviews[i].gameID,
+              title: this.games[this.indexes[this.reviews[i].gameID]].information.title,
+              difficulty: j,
+              stars: this.reviews[i].stars[j]
+            });
           }
         }
     },

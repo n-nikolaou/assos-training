@@ -2,7 +2,7 @@
   <h1>Welcome to Cognitive Games!</h1>
   <h3 class="my-2 text-muted">Here are some featured games you can try.</h3>
 </div>
-<div #target class="alert alert-light my-2 mx-5">
+<div #target class="alert alert-light my-2 mx-auto">
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-7 g-4">
     <div class="col"  *ngFor="let g of featuredGames">
       <div class="card">
@@ -14,6 +14,15 @@
           <h6 class="card-text text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. A, nam!</h6>
           <a href="{{g.information.multimedia}}" class="btn btn-primary mt-2 text-white" target="_blank" rel="noopener noreferrer" >Watch Online</a>
         </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col text-center">
+        <a [routerLink]="['search', 'NULL']" routerLinkActive="active" style="text-decoration: none; color: white">
+          <button class="btn btn-lg btn-primary my-4" type="button">See all games here</button>
+        </a>
       </div>
     </div>
   </div>
