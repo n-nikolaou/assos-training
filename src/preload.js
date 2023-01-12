@@ -3,12 +3,6 @@ const mongodb = require('mongodb');
 const http = require('http');
 const express = require('express');
 
-// contextBridge.exposeInMainWorld('versions', {
-//   node: () => process.versions.node,
-//   chrome: () => process.versions.chrome,
-//   electron: () => process.versions.electron,
-// })
-
 window.ipcRenderer = require('electron').ipcRenderer;
 
 const uri = 'mongodb://localhost:27017';
@@ -35,9 +29,10 @@ async function fillDB(str, database) {
   if (data) {
     try {
       await collection.insertOne(data);
-      for (let i = 0; i < data?.cognitiveGames[0].contents.length; i++) {
-        await collection.insertOne(data?.cognitiveGames[0].contents[i])
-      }
+      for (let j = 0; j < data?.cognitiveGames.length; j++)
+        for (let i = 0; i < data?.cognitiveGames[j].contents.length; i++) {
+          await collection.insertOne(data?.cognitiveGames[j].contents[i])
+        }
     } catch (e) {
       console.error(e);
     }

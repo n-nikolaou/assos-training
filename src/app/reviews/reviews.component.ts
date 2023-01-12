@@ -34,9 +34,11 @@ export class ReviewsComponent implements AfterViewInit {
         //@ts-ignore
         this.data = next;
         if (this.data) {
-          for (let i = 0; i < this.data?.cognitiveGames[0].contents.length; i++) {
-            this.games.push(this.data?.cognitiveGames[0].contents[i])
-            this.indexes[this.games[i].id] = i;
+          for (let j = 0; j < this.data?.cognitiveGames.length; j++) {
+            for (let i = 0; i < this.data?.cognitiveGames[j].contents.length; i++) {
+              this.games.push(this.data?.cognitiveGames[j].contents[i])
+              this.indexes[this.games[i].id] = i;
+            }
           }
         }
         for (let i = 0; i < this.reviews.length; i++) {

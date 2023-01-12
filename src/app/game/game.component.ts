@@ -11,11 +11,9 @@ import {Content} from "../models/Content";
 })
 export class GameComponent implements AfterViewInit {
   data: Games | undefined;
-  games: Content[];
   featuredGames: Content[];
 
   constructor(private gameService: GameService) {
-    this.games = [];
     this.featuredGames = [];
   }
 
@@ -30,7 +28,6 @@ export class GameComponent implements AfterViewInit {
         this.data = next;
         if (this.data) {
           for (let i = 0; i < this.data?.cognitiveGames[0].contents.length; i++) {
-            this.games.push(this.data?.cognitiveGames[0].contents[i])
             if (i < 10) this.featuredGames.push(this.data?.cognitiveGames[0].contents[i]);
           }
         }

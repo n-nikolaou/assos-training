@@ -48,11 +48,14 @@ export class CollectionComponent implements AfterViewInit{
         //@ts-ignore
         this.data = next;
         if (this.data) {
-          for (let i = 0; i < this.data?.cognitiveGames[0].contents.length; i++) {
-            this.games.push(this.data?.cognitiveGames[0].contents[i])
-            for (let j = 0; j < this.data?.cognitiveGames[0].contents[i].information.mainScreen.length; j++)
-              if (this.data?.cognitiveGames[0].contents[i].information.mainScreen[j].difficulty > this.maxDiff)
-                this.maxDiff = this.data?.cognitiveGames[0].contents[i].information.mainScreen[j].difficulty;
+          for (let k = 0; k < this.data?.cognitiveGames.length; k++) {
+            for (let i = 0; i < this.data?.cognitiveGames[k].contents.length; i++) {
+              this.games.push(this.data?.cognitiveGames[k].contents[i])
+              for (let j = 0; j < this.data?.cognitiveGames[k].contents[i].information.mainScreen.length; j++) {
+                if (this.data?.cognitiveGames[k].contents[i].information.mainScreen[j].difficulty > this.maxDiff)
+                  this.maxDiff = this.data?.cognitiveGames[k].contents[i].information.mainScreen[j].difficulty;
+              }
+            }
           }
           this.filterGames();
         }
@@ -92,7 +95,7 @@ export class CollectionComponent implements AfterViewInit{
         for (k = 0; k < this.games[j].information.mainScreen.length; k++)
           if (this.diffFilter[i] === this.games[j].information.mainScreen[k].difficulty)
             break;
-        
+
         if (k === this.games[j].information.mainScreen.length) {
           matching = false;
           break;

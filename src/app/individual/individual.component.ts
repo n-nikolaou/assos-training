@@ -1,4 +1,4 @@
-import {AfterViewInit, Component} from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {GameService} from "../game/game.service";
 import {Games} from "../models/Games";
@@ -10,7 +10,7 @@ import {Review} from "../models/Reviews";
   templateUrl: './individual.component.html',
   styleUrls: ['./individual.component.css']
 })
-export class IndividualComponent implements AfterViewInit{
+export class IndividualComponent implements OnInit{
   game: Content;
   reviews: Review;
 
@@ -53,7 +53,7 @@ export class IndividualComponent implements AfterViewInit{
     this.reviews = this.gameService.getReview(this.id);
   }
 
-  ngAfterViewInit() {
+  ngOnInit() {
     if (!this.apiLoaded) {
       const tag = document.createElement('script');
       tag.src = 'https://www.youtube.com/iframe_api';

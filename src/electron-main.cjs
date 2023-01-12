@@ -14,7 +14,7 @@ function createWindow () {
     width: isDev ? 1800 : 1000,
     height: 900,
     webPreferences: {
-      devTools: true,
+      devTools: isDev,
       nodeIntegration: true,
       enableRemoteModule: true,
       contextIsolation: false,
